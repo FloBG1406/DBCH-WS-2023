@@ -3,7 +3,7 @@ package com.openelements.dbch;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public record Block(LocalDateTime timestamp, String data, String previousHash, boolean genesisBlock) {
+public record Block(LocalDateTime timestamp, String data, String previousHash, int nonce, boolean genesisBlock) {
 
     public Block {
         Objects.requireNonNull(timestamp);
@@ -16,11 +16,11 @@ public record Block(LocalDateTime timestamp, String data, String previousHash, b
         }
     }
 
-    public Block(String data, String previousHash) {
-        this(LocalDateTime.now(), data, previousHash, false);
+    public Block(String data, String previousHash, int nonce) {
+        this(LocalDateTime.now(), data, previousHash, nonce, false);
     }
 
-    public Block(String data) {
-        this(LocalDateTime.now(), data, null, true);
+    public Block(String data, int nonce) {
+        this(LocalDateTime.now(), data, null, nonce, true);
     }
 }

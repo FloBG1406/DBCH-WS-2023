@@ -6,21 +6,39 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Random;
+import java.util.function.Function;
 
 public class Chain {
 
+    public static final String HASH_MINING_PREFIX = "00";
     private List<Block> blocks;
 
     public Chain() {
         this.blocks = new ArrayList<>();
     }
 
+    private Block mining(Function<Integer, Block> blockCreatoFunction) {
+        Random random = new Random(System.currentTimeMillis());
+        int nonce = -1;
+        Block block = blockCreatoFunction.apply(nonce);
+        while (!calculateHash(block).startsWith(HASH_MINING_PREFIX)) {
+            nonce = random.nextInt();
+            System.out.println("Trying with nonce " + nonce);
+            block = blockCreatoFunction.apply(nonce);
+        }
+        return block;
+    }
+
     public void addBlock(String data) {
+        Random random = new Random(System.currentTimeMillis());
         if (blocks.isEmpty()) {
-            blocks.add(new Block(data));
+            Block block = mining(nonce -> new Block(data, nonce));
+            blocks.add(block);
         } else {
             String hashFromPrevBlock = calculateHash(getLastBlock());
-            blocks.add(new Block(data, hashFromPrevBlock));
+            Block block = mining(nonce -> new Block(data, hashFromPrevBlock, nonce));
+            blocks.add(block);
          }
     }
 
